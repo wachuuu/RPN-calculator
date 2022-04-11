@@ -25,5 +25,7 @@
     <string name="subtract">-</string>
     <string name="multiply">×</string>
     <string name="divide">÷</string>
+    <string name="sqrt">√</string>
+    <string name="pow">^</string>
 
 </resources>
