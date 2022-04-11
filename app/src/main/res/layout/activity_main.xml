@@ -105,6 +105,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/rounded"
                 android:backgroundTint="@color/primary_light"
+                android:onClick="clearAll"
                 android:text="@string/clearall"
                 android:textColor="@color/white"
                 android:textSize="18sp" />
@@ -438,6 +439,7 @@
                 android:layout_marginVertical="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/rounded"
+                android:onClick="enter"
                 android:text="@string/enter"
                 android:textColor="@color/white"
                 android:textSize="18sp" />
