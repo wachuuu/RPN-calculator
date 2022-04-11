@@ -11,6 +11,7 @@
         android:theme="@style/Theme.RPNCalc">
         <activity
             android:name=".MainActivity"
+            android:theme="@style/generalnotitle"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
