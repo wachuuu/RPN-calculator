@@ -28,4 +28,7 @@
     <string name="sqrt">√</string>
     <string name="pow">^</string>
 
+    <string name="menu_settings_title">Settings</string>
+    <string name="title_activity_app_settings">Settings</string>
+
 </resources>

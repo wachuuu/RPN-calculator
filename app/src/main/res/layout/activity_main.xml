@@ -8,6 +8,10 @@
     tools:context=".MainActivity"
     tools:ignore="UsingOnClickInXml">
 
+    <include
+        android:id="@+id/app_toolbar"
+        layout="@layout/app_toolbar" />
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -17,8 +21,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tableLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintStart_toStartOf="parent">
 
         <TextView
             android:id="@+id/row3"

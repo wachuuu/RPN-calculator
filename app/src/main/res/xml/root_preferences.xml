@@ -1,0 +1,20 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ListPreference
+        android:entries="@array/colors_entries"
+        android:entryValues="@array/colors_values"
+        android:key="color"
+        android:title="Stack border color"
+        android:defaultValue="0"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        android:entries="@array/round_entries"
+        android:entryValues="@array/round_values"
+        android:key="round"
+        android:title="Round numbers to"
+        android:defaultValue="2"
+        app:useSimpleSummaryProvider="true" />
+
+</PreferenceScreen>

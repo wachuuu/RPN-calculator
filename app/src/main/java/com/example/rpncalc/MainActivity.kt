@@ -1,12 +1,15 @@
 package com.example.rpncalc
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
@@ -25,6 +28,20 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.app_toolbar)
+        setSupportActionBar(toolbar)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val settingsIntent = Intent(this, AppSettings::class.java)
+        startActivity(settingsIntent)
+        return super.onOptionsItemSelected(item)
     }
 
     private fun checkIfWhole(number: Double): String {
