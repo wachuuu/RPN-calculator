@@ -4,10 +4,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.Button
 import android.widget.TextView
 import androidx.preference.PreferenceManager
@@ -22,14 +19,18 @@ enum class InputState {
     ADDNEW
 }
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
+    private lateinit var gDetector: GestureDetector
     private var stack = ArrayDeque<Double>()
+    private var previousStack = ArrayDeque<Double>()
+    private var previousInput = "0"
     private var inputState = InputState.APPEND
     private val rowIDs: IntArray = intArrayOf(R.id.row0, R.id.row1, R.id.row2, R.id.row3)
     private var roundRange = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        gDetector = GestureDetector(this, this)
         setContentView(R.layout.activity_main)
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.app_toolbar)
         setSupportActionBar(toolbar)
@@ -112,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateRowsView(row0Value: Double = 0.0, state: InputState = InputState.APPEND) {
         inputState = state
-        val values = padStackToSize(3)
+        val values = padStackToSize(rowIDs.size - 1)
         var tv: TextView
         for (i in rowIDs.size-1 downTo 1) {
             tv = findViewById(rowIDs[i])
@@ -122,7 +123,36 @@ class MainActivity : AppCompatActivity() {
         tv.text = parseNumber(row0Value)
     }
 
+    private fun saveState() {
+        val row: TextView = findViewById(rowIDs[0])
+        previousStack.clear()
+        for (elem in stack) {
+            previousStack.push(elem)
+        }
+        previousInput = row.text.toString()
+    }
+
+    private fun undo() {
+        val row: TextView = findViewById(rowIDs[0])
+        val tmpInput = row.text.toString()
+        val tmpStack = ArrayDeque<Double>()
+        for (elem in stack) {
+            tmpStack.push(elem)
+        }
+        stack.clear()
+        for (elem in previousStack)
+            stack.push(elem)
+        previousStack.clear()
+        for (elem in tmpStack) {
+            previousStack.push(elem)
+        }
+        updateRowsView()
+        row.text = previousInput
+        previousInput = tmpInput
+    }
+
     fun numberClicked(v: View) {
+        saveState()
         val b: Button = v as Button
         val row: TextView = findViewById(rowIDs[0])
         if (row.text == getString(R.string.zero) || inputState == InputState.OVERRIDE) {
@@ -140,6 +170,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun dotClicked(v: View) {
+        saveState()
         val row: TextView = findViewById(rowIDs[0])
         if (row.text.toString().contains(".")) return
         if (ceil(row.text.toString().toDouble()) != floor(row.text.toString().toDouble())) return
@@ -158,21 +189,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun changeNumberSign(v: View) {
+        saveState()
         val row: TextView = findViewById(rowIDs[0])
         row.text = parseNumber(-row.text.toString().toDouble())
     }
 
     fun clear(v: View) {
+        saveState()
         val row: TextView = findViewById(rowIDs[0])
         row.text = getString(R.string.zero)
     }
 
     fun clearAll(v: View) {
+        saveState()
         stack.clear()
         updateRowsView()
     }
 
     fun swap(v: View) {
+        saveState()
         val row0: TextView = findViewById(rowIDs[0])
         if (stack.size > 0) {
             val elem1 = stack.pop()
@@ -183,6 +218,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun drop(v: View) {
+        saveState()
         if (stack.size > 0) {
             val elem = stack.pop()
             updateRowsView(row0Value = elem, state = InputState.ADDNEW)
@@ -192,6 +228,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun enter(v: View) {
+        saveState()
         val row: TextView = findViewById(rowIDs[0])
         val value = row.text.toString().toDouble()
         stack.push(value)
@@ -199,6 +236,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun add(v: View) {
+        saveState()
         if (stack.size > 0) {
             val row0: TextView = findViewById(rowIDs[0])
             val x = row0.text.toString().toDouble()
@@ -208,6 +246,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun subtract(v: View) {
+        saveState()
         if (stack.size > 0) {
             val row0: TextView = findViewById(rowIDs[0])
             val x = row0.text.toString().toDouble()
@@ -217,6 +256,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun multiply(v: View) {
+        saveState()
         if (stack.size > 0) {
             val row0: TextView = findViewById(rowIDs[0])
             val x = row0.text.toString().toDouble()
@@ -226,6 +266,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun divide(v: View) {
+        saveState()
         if (stack.size > 0) {
             val row0: TextView = findViewById(rowIDs[0])
             val x = row0.text.toString().toDouble()
@@ -235,12 +276,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sqrt(v: View) {
+        saveState()
         val row0: TextView = findViewById(rowIDs[0])
         val x = row0.text.toString().toDouble()
         updateRowsView(row0Value = kotlin.math.sqrt(x), state = InputState.ADDNEW)
     }
 
     fun pow(v: View) {
+        saveState()
         if (stack.size > 0) {
             val row0: TextView = findViewById(rowIDs[0])
             val x = row0.text.toString().toDouble()
@@ -248,4 +291,24 @@ class MainActivity : AppCompatActivity() {
             updateRowsView(row0Value = y.pow(x), state = InputState.ADDNEW)
         }
     }
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        gDetector.onTouchEvent(event)
+        return super.onTouchEvent(event)
+    }
+
+    override fun onFling(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean {
+        val diffX = ((p1?.x ?: 0f) - (p0?.x ?: 0f))
+        if (diffX > 100) {
+            undo()
+            return true
+        }
+        return false
+    }
+
+    override fun onDown(p0: MotionEvent?): Boolean { return false }
+    override fun onLongPress(p0: MotionEvent?) { return }
+    override fun onScroll(p0: MotionEvent?, p1: MotionEvent?, p2: Float, p3: Float): Boolean { return false }
+    override fun onShowPress(p0: MotionEvent?) { return }
+    override fun onSingleTapUp(p0: MotionEvent?): Boolean { return false }
 }
