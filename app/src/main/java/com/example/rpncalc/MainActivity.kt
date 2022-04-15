@@ -1,6 +1,7 @@
 package com.example.rpncalc
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -9,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.preference.PreferenceManager
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -24,12 +26,16 @@ class MainActivity : AppCompatActivity() {
     private var stack = ArrayDeque<Double>()
     private var inputState = InputState.APPEND
     private val rowIDs: IntArray = intArrayOf(R.id.row0, R.id.row1, R.id.row2, R.id.row3)
+    private var roundRange = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.app_toolbar)
         setSupportActionBar(toolbar)
+
+        setBorderPreferences()
+        setRoundRangePreferences()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -44,11 +50,44 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun checkIfWhole(number: Double): String {
-        if( ceil(number) == floor(number)) {
+    private fun setBorderPreferences() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val highlightFirstRow = sharedPreferences.getBoolean("highlight", true)
+
+        val colorID: Int = when (sharedPreferences.getString("color", "")) {
+            "gray" -> R.color.gray
+            "orange" -> R.color.orange
+            "white" -> R.color.white
+            else -> R.color.white
+        }
+
+        for (id in rowIDs) {
+            val row: TextView = findViewById(id)
+            row.backgroundTintList = ColorStateList.valueOf(resources.getColor(colorID))
+        }
+
+        if (highlightFirstRow) {
+            val row: TextView = findViewById(rowIDs[0])
+            row.backgroundTintList = when (colorID) {
+                R.color.gray -> ColorStateList.valueOf(resources.getColor(R.color.orange))
+                R.color.white -> ColorStateList.valueOf(resources.getColor(R.color.orange))
+                R.color.orange -> ColorStateList.valueOf(resources.getColor(R.color.white))
+                else -> ColorStateList.valueOf(resources.getColor(colorID))
+            }
+        }
+    }
+
+    private fun setRoundRangePreferences() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val roundRangePref = sharedPreferences.getString("round", "2")
+        roundRange = roundRangePref?.toInt() ?: 2
+    }
+
+    private fun parseNumber(number: Double): String {
+        if( ceil(number) == floor(number) || roundRange == 0) {
             return number.toInt().toString()
         }
-        return number.toString()
+        return String.format("%.${roundRange}f", number)
     }
 
     private fun padStackToSize(size: Int): ArrayDeque<Double> {
@@ -77,10 +116,10 @@ class MainActivity : AppCompatActivity() {
         var tv: TextView
         for (i in rowIDs.size-1 downTo 1) {
             tv = findViewById(rowIDs[i])
-            tv.text = checkIfWhole(values.pop())
+            tv.text = parseNumber(values.pop())
         }
         tv = findViewById(rowIDs[0])
-        tv.text = checkIfWhole(row0Value)
+        tv.text = parseNumber(row0Value)
     }
 
     fun numberClicked(v: View) {
@@ -102,7 +141,8 @@ class MainActivity : AppCompatActivity() {
 
     fun dotClicked(v: View) {
         val row: TextView = findViewById(rowIDs[0])
-        if (ceil(row.text.toString().toDouble()) != ceil(row.text.toString().toDouble())) return
+        if (row.text.toString().contains(".")) return
+        if (ceil(row.text.toString().toDouble()) != floor(row.text.toString().toDouble())) return
         if (row.text == getString(R.string.zero) || inputState == InputState.OVERRIDE) {
             row.text = "0".plus(getString(R.string.dot))
         }
@@ -119,7 +159,7 @@ class MainActivity : AppCompatActivity() {
 
     fun changeNumberSign(v: View) {
         val row: TextView = findViewById(rowIDs[0])
-        row.text = checkIfWhole(-row.text.toString().toDouble())
+        row.text = parseNumber(-row.text.toString().toDouble())
     }
 
     fun clear(v: View) {
@@ -134,7 +174,6 @@ class MainActivity : AppCompatActivity() {
 
     fun swap(v: View) {
         val row0: TextView = findViewById(rowIDs[0])
-        val row1: TextView = findViewById(rowIDs[1])
         if (stack.size > 0) {
             val elem1 = stack.pop()
             val elem2 = row0.text.toString().toDouble()

@@ -1,20 +1,30 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ListPreference
-        android:entries="@array/colors_entries"
-        android:entryValues="@array/colors_values"
-        android:key="color"
-        android:title="Stack border color"
-        android:defaultValue="0"
-        app:useSimpleSummaryProvider="true" />
+    <PreferenceCategory android:title="Colors">
 
-    <ListPreference
-        android:entries="@array/round_entries"
-        android:entryValues="@array/round_values"
-        android:key="round"
-        android:title="Round numbers to"
-        android:defaultValue="2"
-        app:useSimpleSummaryProvider="true" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/colors_entries"
+            android:entryValues="@array/colors_values"
+            android:key="color"
+            android:title="Stack border color"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="highlight"
+            android:title="Highlight first row" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Output">
+
+        <ListPreference
+            android:defaultValue="2"
+            android:entries="@array/round_entries"
+            android:entryValues="@array/round_values"
+            android:key="round"
+            android:title="Round numbers to"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
