@@ -1,0 +1,31 @@
+<resources>
+    <string-array name="colors_entries">
+        <item>Orange</item>
+        <item>Gray</item>
+        <item>White</item>
+    </string-array>
+
+    <string-array name="colors_values">
+        <item>orange</item>
+        <item>gray</item>
+        <item>white</item>
+    </string-array>
+
+    <string-array name="round_entries">
+        <item>Integers</item>
+        <item>One digit</item>
+        <item>Two digits</item>
+        <item>Three digits</item>
+        <item>Five digits</item>
+        <item>Ten digits</item>
+    </string-array>
+
+    <string-array name="round_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+</resources>

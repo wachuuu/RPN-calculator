@@ -10,9 +10,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RPNCalc">
         <activity
+            android:name=".AppSettings"
+            android:exported="false"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/title_activity_app_settings" />
+        <activity
             android:name=".MainActivity"
-            android:theme="@style/generalnotitle"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/generalnotitle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
