@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener {
             "gray" -> R.color.gray
             "orange" -> R.color.orange
             "white" -> R.color.white
-            else -> R.color.white
+            else -> R.color.gray
         }
 
         for (id in rowIDs) {

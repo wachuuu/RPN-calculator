@@ -1,13 +1,13 @@
 <resources>
     <string-array name="colors_entries">
-        <item>Orange</item>
         <item>Gray</item>
+        <item>Orange</item>
         <item>White</item>
     </string-array>
 
     <string-array name="colors_values">
-        <item>orange</item>
         <item>gray</item>
+        <item>orange</item>
         <item>white</item>
     </string-array>
 

@@ -10,6 +10,7 @@
             android:key="color"
             android:title="Stack border color"
             app:useSimpleSummaryProvider="true" />
+
         <SwitchPreference
             android:defaultValue="true"
             android:key="highlight"
